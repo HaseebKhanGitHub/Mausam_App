@@ -1,9 +1,11 @@
 
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 
 class Home extends StatefulWidget {
@@ -17,18 +19,23 @@ class _HomeState extends State<Home> {
 
 
      void getData() async{
-     //Response response =await get('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Amsterdam');
 
-       var url = Uri.parse('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Amsterdam');
-       //http.Response response = await http.get(url);
-       http.Response response = await http.get(url);
+       var url = Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=Gujranwala&appid=9f24f45f1a43cd906106cb78433a7be0');
+       http.Response response = await http.get(url); // Use the Uri object with http.get
+       Map data = jsonDecode(response.body); // Decode the JSON response
 
-     print(response.body);
+       /*Map temp_data = data['main'];
+       double temp = temp_data['temp'];
+       print(temp);*/
+
+       List weather_data = data['weather'];  //list type
+       Map weather_main_data = weather_data[0];   //dictionary type
+
+       print(weather_data);
+       print(weather_main_data['main']);
+
+
      }
-
-
-
-
 
   @override
   void initState() {
