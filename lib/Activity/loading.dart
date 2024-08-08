@@ -1,7 +1,3 @@
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:mausam_app/Worker/worker.dart';
 
@@ -13,12 +9,9 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-
   String Temperature = 'Loading';
 
-
-  void startApp() async
-  {
+  void startApp() async {
     worker instance = worker(location: 'cbshbcs');
     await instance.getData();
 
@@ -35,21 +28,21 @@ class _LoadingState extends State<Loading> {
     // TODO: implement initState
     super.initState();
     startApp();
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(children: <Widget>[
-          TextButton.icon(onPressed: (){
+        body: SafeArea(
+      child: Column(children: <Widget>[
+        TextButton.icon(
+          onPressed: () {
             Navigator.pushNamed(context, '/home');
-        
-          }, icon: Icon(Icons.add_to_home_screen) ,label: Text(Temperature),
-          )
-        ]),
-      )
-    );
+          },
+          icon: Icon(Icons.add_to_home_screen),
+          label: Text(Temperature),
+        )
+      ]),
+    ));
   }
 }
