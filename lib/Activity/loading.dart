@@ -18,10 +18,12 @@ class _LoadingState extends State<Loading> {
   late String air_speed;
   late String des;
   late String main;
+  late String icon;
+   String city = 'Gujranwala';
 
 
   void startApp() async {
-    worker instance = worker(location: 'Lahore');
+    worker instance = worker(location: city);
     await instance.getData();
 
     temp = instance.temp;
@@ -29,6 +31,7 @@ class _LoadingState extends State<Loading> {
     air_speed = instance.air_speed;
     des = instance.description;
     main = instance.main;
+    icon = instance.icon;
 
     Future.delayed(Duration(seconds: 2),(){
       Navigator.pushReplacementNamed(context, '/home',
@@ -38,6 +41,8 @@ class _LoadingState extends State<Loading> {
             'air_value' : air_speed,
             'des_value' : des,
             'main_value' : main,
+            'icon_value' : icon,
+            'city_value' : city,
     });
 
     }
