@@ -38,8 +38,18 @@ class _HomeState extends State<Home> {
     // Cast the arguments to a Map
     final Map<String, dynamic> info =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
+    String temp = ((info['temp_value']).toString()).substring(0,4);
     //Map info = ModalRoute.of(context).settings.arguments;
+
+    String icon = info['icon_value'];
+    String getcity = info['city_value'];
+    String hum = info['hum_value'];
+    String air_speed = (((info['air_value']).toString()).substring(0,4));
+    String des = info['des_value'];
+
+
+
+
     return Scaffold(
       resizeToAvoidBottomInset: false ,
       appBar: PreferredSize(
@@ -95,15 +105,17 @@ class _HomeState extends State<Home> {
                         color: Colors.white.withOpacity(0.5)),
                     child: Row(
                       children: [
-                        // Image.network('c'),
+                        Image.network('https://openweathermap.org/img/wn/$icon@2x.png',width: 70,height: 70,),
+                        SizedBox(width: 30),
                         Column(
-                          children: [Text('Scattered clo',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                            Text('Lahore',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold))],
+                          children: [
+                            Text(des.toUpperCase() ,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                            Text('In $getcity',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold))],
                         )
                       ],
                     ),
                     margin: EdgeInsets.symmetric(horizontal: 25),
-                    padding: EdgeInsets.all(26),
+                    padding: EdgeInsets.all(20),
                   ),
                 ),
               ]),
@@ -122,7 +134,7 @@ class _HomeState extends State<Home> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('44',style: TextStyle(fontSize: 90),),
+                              Text('$temp',style: TextStyle(fontSize: 90),),
                               Text('C', style: TextStyle(fontSize: 30),)
                             ],
                           )
@@ -152,7 +164,7 @@ class _HomeState extends State<Home> {
                             ],
                           ),
                           SizedBox(height: 30),
-                          Text('20.9',style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+                          Text('$air_speed',style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
                           Text('km/hr')
                         ],
                       ),
@@ -174,7 +186,7 @@ class _HomeState extends State<Home> {
                           ],
                         ),
                         SizedBox(height: 30),
-                        Text('20.9',style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+                        Text('$hum',style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
                         Text('km/hr')
     ],
     ),
@@ -193,7 +205,7 @@ class _HomeState extends State<Home> {
                     Text('Powered By openweathermap.org')
                   ],
                 ),
-                padding: EdgeInsets.all(30),
+                padding: EdgeInsets.all(20),
               )
             ],
           ),
