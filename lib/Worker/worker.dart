@@ -28,7 +28,7 @@ class worker {
       await http.get(url); // Use the Uri object with http.get
       Map data = jsonDecode(response.body); // Decode the JSON response
 
-     // print(data);
+      print(data);
       //temperature, humidity
       Map temp_data = data['main'];
       double getTemp = temp_data['temp'] - 273.15;
