@@ -72,20 +72,23 @@ class _LoadingState extends State<Loading> {
     startApp(city);
 
     return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //Image.asset('wlogo.png',height: 100,width: 100,),
-              Image(image: AssetImage('assets/images/wlogo.png'),height: 230,width: 350,),
-              Text('Mausam App', style: TextStyle(fontSize: 27, fontWeight: FontWeight.w500,color: Colors.white),),
-              Text('Made By Haseeb Khan',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Colors.white),),
-                SizedBox(height: 20,),
-                SpinKitThreeBounce(
-        color: Colors.white,
-        size: 30.0,
-      ),
-      ],
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //Image.asset('wlogo.png',height: 100,width: 100,), maybe depreciated
+                SizedBox(height: 230,),
+                Image(image: AssetImage('assets/images/wlogo.png'),height: 230,width: 350,),
+                Text('Mausam App', style: TextStyle(fontSize: 27, fontWeight: FontWeight.w500,color: Colors.white),),
+                Text('Made By Haseeb Khan',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Colors.white),),
+                  SizedBox(height: 20,),
+                  SpinKitThreeBounce(
+          color: Colors.white,
+          size: 30.0,
+                ),
+                ],
+            ),
           ),
         ),
       backgroundColor: Colors.blue.shade200,
