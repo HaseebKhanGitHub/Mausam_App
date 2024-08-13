@@ -16,6 +16,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  TextEditingController searchController = new TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -44,7 +46,7 @@ class _HomeState extends State<Home> {
     String icon = info['icon_value'];
     String getcity = info['city_value'];
     String hum = info['hum_value'];
-    String air_speed = (((info['air_value']).toString()).substring(0, 4));
+    String air_speed = ((info['air_value']).substring(0, 4));  //tostring()
     String des = info['des_value'];
 
     return Scaffold(
@@ -67,7 +69,7 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
               Container(
-                // Search Container
+                // Search Container  --------------------------------------------
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 margin: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                 decoration: BoxDecoration(
@@ -77,7 +79,12 @@ class _HomeState extends State<Home> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        print(searchController.text);
+                        Navigator.pushNamed(context, '/loading', arguments: {
+                          'searchText' : searchController.text
+                        });
+                      },
                       child: Container(
                         child: Icon(Icons.search, color: Colors.blue),
                         margin: EdgeInsets.fromLTRB(3, 0, 7, 0),
@@ -85,6 +92,7 @@ class _HomeState extends State<Home> {
                     ),
                     Expanded(
                       child: TextField(
+                        controller: searchController,
                         decoration: InputDecoration(
                           hintText: 'Search $city',
                           border: InputBorder.none,
@@ -94,7 +102,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-              Row(children: [
+              Row(children: [ //City Container   --------------------------------
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
@@ -127,7 +135,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ]),
-              Row(
+              Row( // Temperature Container -----------------------------------
                 children: [
                   Expanded(
                     child: Container(
@@ -162,7 +170,7 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-              Row(
+              Row( // Wind Container --------------------------------------------
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Expanded(
@@ -191,7 +199,7 @@ class _HomeState extends State<Home> {
                       height: 200,
                     ),
                   ),
-                  Expanded(
+                  Expanded( // Humidity Container -------------------------------
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
@@ -219,7 +227,7 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-              Container(
+              Container( //Text ------------------------------------------------
                 child: Column(
                   children: [
                     Text('Made By Haseeb Khan'),
