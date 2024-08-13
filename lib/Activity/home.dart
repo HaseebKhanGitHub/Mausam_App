@@ -40,13 +40,21 @@ class _HomeState extends State<Home> {
     // Cast the arguments to a Map
     final Map<String, dynamic> info =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    String temp = ((info['temp_value']).toString()).substring(0, 4);
+    String temp = ((info['temp_value']).toString());
+    String air_speed = ((info['air_value']).toString());
     //Map info = ModalRoute.of(context).settings.arguments;
 
+    if(temp == 'NA' || air_speed == 'NA'){
+      print('NA');
+    }
+    else{
+      temp = ((info['temp_value']).toString()).substring(0, 4);
+      air_speed = ((info['air_value']).toString()).substring(0, 4); 
+    }
     String icon = info['icon_value'];
     String getcity = info['city_value'];
     String hum = info['hum_value'];
-    String air_speed = ((info['air_value']).substring(0, 4));  //tostring()
+
     String des = info['des_value'];
 
     return Scaffold(
@@ -80,10 +88,18 @@ class _HomeState extends State<Home> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        print(searchController.text);
-                        Navigator.pushNamed(context, '/loading', arguments: {
-                          'searchText' : searchController.text
-                        });
+
+                        if((searchController.text).replaceAll(' ', '') == ''){
+                          print('Blanked Search');
+                        }
+                        else{
+                          print(searchController.text);
+                          Navigator.pushNamed(context, '/loading', arguments: {
+                            'searchText' : searchController.text
+                          });
+                        }
+
+
                       },
                       child: Container(
                         child: Icon(Icons.search, color: Colors.blue),

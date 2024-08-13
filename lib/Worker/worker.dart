@@ -54,11 +54,11 @@ class worker {
       icon = weather_main_data['icon'];
     } catch(e)
     {
-      temp = 'Cannot Find Data';
-      humidity = 'Cannot Find Data';
-      air_speed = 'Cannot Find Data';
+      temp = 'NA';
+      humidity = 'NA';
+      air_speed = 'NA';
       description = 'Cannot Find Data';
-      main = 'Cannot Find Data';
+      main = 'NA';
       icon = '03n';
     }
     }
