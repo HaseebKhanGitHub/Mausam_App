@@ -9,6 +9,7 @@ import 'package:http/http.dart';
 
 void main(){
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     // home: Home(),
     routes: {
       '/' : (context) => Loading(),
