@@ -20,15 +20,14 @@ class worker {
   late String icon;
 
   Future<void> getData() async {
-
-    try{
+    try {
       var url = Uri.parse(
           'https://api.openweathermap.org/data/2.5/weather?q=$location&appid=9f24f45f1a43cd906106cb78433a7be0');
       http.Response response =
-      await http.get(url); // Use the Uri object with http.get
+          await http.get(url); // Use the Uri object with http.get
       Map data = jsonDecode(response.body); // Decode the JSON response
 
-      print(data);
+      // print(data);
       //temperature, humidity
       Map temp_data = data['main'];
       double getTemp = temp_data['temp'] - 273.15;
@@ -36,14 +35,13 @@ class worker {
 
       //Getting AirSpeed
       Map wind = data['wind'];
-      double getAirspeed = wind['speed']*3.6;
+      double getAirspeed = wind['speed'] * 3.6;
 
       //Getting Description
       List weather_data = data['weather']; //list type
       Map weather_main_data = weather_data[0]; //dictionary type
       String getMaindes = weather_main_data['main'];
       String getDesc = weather_main_data['description'];
-
 
       //Assigning values
       temp = getTemp.toString();
@@ -52,8 +50,7 @@ class worker {
       description = getDesc;
       main = getMaindes;
       icon = weather_main_data['icon'];
-    } catch(e)
-    {
+    } catch (e) {
       temp = 'NA';
       humidity = 'NA';
       air_speed = 'NA';
@@ -61,9 +58,5 @@ class worker {
       main = 'NA';
       icon = '03n';
     }
-    }
-
-    }
-
-
-
+  }
+}

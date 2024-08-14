@@ -16,8 +16,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   TextEditingController searchController = new TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -44,12 +44,11 @@ class _HomeState extends State<Home> {
     String air_speed = ((info['air_value']).toString());
     //Map info = ModalRoute.of(context).settings.arguments;
 
-    if(temp == 'NA' || air_speed == 'NA'){
+    if (temp == 'NA' || air_speed == 'NA') {
       print('NA');
-    }
-    else{
+    } else {
       temp = ((info['temp_value']).toString()).substring(0, 4);
-      air_speed = ((info['air_value']).toString()).substring(0, 4); 
+      air_speed = ((info['air_value']).toString()).substring(0, 4);
     }
     String icon = info['icon_value'];
     String getcity = info['city_value'];
@@ -89,18 +88,16 @@ class _HomeState extends State<Home> {
                     children: [
                       GestureDetector(
                         onTap: () {
-        
-                          if((searchController.text).replaceAll(' ', '') == ''){
+                          if ((searchController.text).replaceAll(' ', '') ==
+                              '') {
                             print('Blanked Search');
-                          }
-                          else{
+                          } else {
                             print(searchController.text);
-                            Navigator.pushReplacementNamed(context, '/loading', arguments: {
-                              'searchText' : searchController.text
-                            });
+                            Navigator.pushReplacementNamed(context, '/loading',
+                                arguments: {
+                                  'searchText': searchController.text
+                                });
                           }
-        
-        
                         },
                         child: Container(
                           child: Icon(Icons.search, color: Colors.blue),
@@ -115,11 +112,32 @@ class _HomeState extends State<Home> {
                             border: InputBorder.none,
                           ),
                         ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if ((searchController.text).replaceAll(' ', '') ==
+                              '') {
+                            print('Blanked Search');
+                          } else {
+                            print(searchController.text);
+                            Navigator.pushReplacementNamed(context, '/loading',
+                                arguments: {
+                                  'searchText': searchController.text
+                                });
+                          }
+                        },
+                        child: Text('Search',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade200),
                       )
                     ],
                   ),
                 ),
-                Row(children: [ //City Container   --------------------------------
+                Row(children: [
+                  //City Container   --------------------------------
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -142,7 +160,8 @@ class _HomeState extends State<Home> {
                               ),
                               Text('In $getcity',
                                   style: TextStyle(
-                                      fontSize: 20, fontWeight: FontWeight.bold))
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold))
                             ],
                           )
                         ],
@@ -152,7 +171,8 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ]),
-                Row( // Temperature Container -----------------------------------
+                Row(
+                  // Temperature Container -----------------------------------
                   children: [
                     Expanded(
                       child: Container(
@@ -175,7 +195,7 @@ class _HomeState extends State<Home> {
                                   '$temp',
                                   style: TextStyle(fontSize: 90),
                                 ),
-                                Icon(WeatherIcons.celsius, size:60),
+                                Icon(WeatherIcons.celsius, size: 60),
                               ],
                             )
                           ],
@@ -187,7 +207,8 @@ class _HomeState extends State<Home> {
                     ),
                   ],
                 ),
-                Row( // Wind Container --------------------------------------------
+                Row(
+                  // Wind Container --------------------------------------------
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
@@ -216,7 +237,8 @@ class _HomeState extends State<Home> {
                         height: 200,
                       ),
                     ),
-                    Expanded( // Humidity Container -------------------------------
+                    Expanded(
+                      // Humidity Container -------------------------------
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
@@ -234,7 +256,10 @@ class _HomeState extends State<Home> {
                               style: TextStyle(
                                   fontSize: 40, fontWeight: FontWeight.bold),
                             ),
-                            Text('%',style: TextStyle(fontSize: 20),)
+                            Text(
+                              '%',
+                              style: TextStyle(fontSize: 20),
+                            )
                           ],
                         ),
                         margin: EdgeInsets.fromLTRB(0, 0, 25, 0),
@@ -244,8 +269,11 @@ class _HomeState extends State<Home> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20,),
-                Container( //Text ------------------------------------------------
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  //Text ------------------------------------------------
                   child: Column(
                     children: [
                       Text('Made By Haseeb Khan'),
