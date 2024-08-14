@@ -1,0 +1,599 @@
+main.dart
+
+
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:mausam_app/Activity/home.dart';
+import  'package:mausam_app/Activity/location.dart';
+import 'package:mausam_app/Activity/loading.dart';
+import 'package:http/http.dart';
+
+void main(){
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    // home: Home(),
+    routes: {
+      '/' : (context) => Loading(),
+     '/home' :  (context) => Home(),
+      '/loading' :  (context) => Loading(),
+    },
+
+
+));
+}
+
+=============================================================================
+loading.dart
+
+import 'dart:core';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mausam_app/Worker/worker.dart';
+
+class Loading extends StatefulWidget {
+  const Loading({super.key});
+
+  @override
+  State<Loading> createState() => _LoadingState();
+}
+
+class _LoadingState extends State<Loading> {
+  late String temp;
+  late String hum;
+  late String air_speed;
+  late String des;
+  late String main;
+  late String icon;
+  String city = 'Gujranwala';
+
+  void startApp(String city) async {
+    worker instance = worker(location: city);
+    await instance.getData();
+
+    temp = instance.temp;
+    hum = instance.humidity;
+    air_speed = instance.air_speed;
+    des = instance.description;
+    main = instance.main;
+    icon = instance.icon;
+
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, '/home', arguments: {
+        'temp_value': temp,
+        'hum_value': hum,
+        'air_value': air_speed,
+        'des_value': des,
+        'main_value': main,
+        'icon_value': icon,
+        'city_value': city,
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Map<String, dynamic>? search =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (search != null && search.isNotEmpty) {
+      //search?.isNotEmpty ?? false before
+      city = search['searchText'];
+    }
+
+    startApp(city);
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              //Image.asset('wlogo.png',height: 100,width: 100,), maybe depreciated
+              SizedBox(
+                height: 230,
+              ),
+              Image(
+                image: AssetImage('assets/images/wlogo.png'),
+                height: 230,
+                width: 350,
+              ),
+              Text(
+                'Mausam App',
+                style: TextStyle(
+                    fontSize: 27,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white),
+              ),
+              Text(
+                'Made By Haseeb Khan',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              SpinKitThreeBounce(
+                color: Colors.white,
+                size: 30.0,
+              ),
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: Colors.blue.shade200,
+    );
+  }
+}
+==============================================================================
+worker.dart
+
+import 'package:http/http.dart' as http;
+
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:mausam_app/main.dart';
+
+class worker {
+  String location;
+
+  worker({required this.location}) {
+    location = this.location;
+  }
+
+  late String temp;
+  late String humidity;
+  late String air_speed;
+  late String description;
+  late String main;
+  late String icon;
+
+  Future<void> getData() async {
+    try {
+      var url = Uri.parse(
+          'https://api.openweathermap.org/data/2.5/weather?q=$location&appid=9f24f45f1a43cd906106cb78433a7be0');
+      http.Response response =
+          await http.get(url); // Use the Uri object with http.get
+      Map data = jsonDecode(response.body); // Decode the JSON response
+
+      // print(data);
+      //temperature, humidity
+      Map temp_data = data['main'];
+      double getTemp = temp_data['temp'] - 273.15;
+      String getHumidity = temp_data['humidity'].toString();
+
+      //Getting AirSpeed
+      Map wind = data['wind'];
+      double getAirspeed = wind['speed'] * 3.6;
+
+      //Getting Description
+      List weather_data = data['weather']; //list type
+      Map weather_main_data = weather_data[0]; //dictionary type
+      String getMaindes = weather_main_data['main'];
+      String getDesc = weather_main_data['description'];
+
+      //Assigning values
+      temp = getTemp.toString();
+      humidity = getHumidity;
+      air_speed = getAirspeed.toString();
+      description = getDesc;
+      main = getMaindes;
+      icon = weather_main_data['icon'];
+    } catch (e) {
+      temp = 'NA';
+      humidity = 'NA';
+      air_speed = 'NA';
+      description = 'Cannot Find Data';
+      main = 'NA';
+      icon = '03n';
+    }
+  }
+}
+==========================================================================================
+home.dart
+
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_gradient_app_bar/flutter_gradient_app_bar.dart';
+import 'package:weather_icons/weather_icons.dart';
+
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  TextEditingController searchController = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    print('This is a  init state');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var city_name = [
+      'Gujranwala',
+      'Lahore',
+      'Karachi',
+      'Peshawar',
+      'Quetta',
+      'Gilgit'
+    ];
+    final _random = new Random();
+    var city = city_name[_random.nextInt(city_name.length)];
+
+    // Cast the arguments to a Map
+    final Map<String, dynamic> info =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String temp = ((info['temp_value']).toString());
+    String air_speed = ((info['air_value']).toString());
+    //Map info = ModalRoute.of(context).settings.arguments;
+
+    if (temp == 'NA' || air_speed == 'NA') {
+      print('NA');
+    } else {
+      temp = ((info['temp_value']).toString()).substring(0, 4);
+      air_speed = ((info['air_value']).toString()).substring(0, 4);
+    }
+    String icon = info['icon_value'];
+    String getcity = info['city_value'];
+    String hum = info['hum_value'];
+
+    String des = info['des_value'];
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(0),
+          child: GradientAppBar(
+            gradient: LinearGradient(colors: [
+              Colors.blue,
+              Colors.blue.shade200,
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+          )),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.blue.shade800, Colors.blue.shade300])),
+            child: Column(
+              children: [
+                Container(
+                  // Search Container  --------------------------------------------
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if ((searchController.text).replaceAll(' ', '') ==
+                              '') {
+                            print('Blanked Search');
+                          } else {
+                            print(searchController.text);
+                            Navigator.pushReplacementNamed(context, '/loading',
+                                arguments: {
+                                  'searchText': searchController.text
+                                });
+                          }
+                        },
+                        child: Container(
+                          child: Icon(Icons.search, color: Colors.blue),
+                          margin: EdgeInsets.fromLTRB(3, 0, 7, 0),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search $city',
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if ((searchController.text).replaceAll(' ', '') ==
+                              '') {
+                            print('Blanked Search');
+                          } else {
+                            print(searchController.text);
+                            Navigator.pushReplacementNamed(context, '/loading',
+                                arguments: {
+                                  'searchText': searchController.text
+                                });
+                          }
+                        },
+                        child: Text('Search',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade200),
+                      )
+                    ],
+                  ),
+                ),
+                Row(children: [
+                  //City Container   --------------------------------
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white.withOpacity(0.5)),
+                      child: Row(
+                        children: [
+                          Image.network(
+                            'https://openweathermap.org/img/wn/$icon@2x.png',
+                            width: 70,
+                            height: 70,
+                          ),
+                          SizedBox(width: 30),
+                          Column(
+                            children: [
+                              Text(
+                                des.toUpperCase(),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Text('In $getcity',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold))
+                            ],
+                          )
+                        ],
+                      ),
+                      margin: EdgeInsets.symmetric(horizontal: 25),
+                      padding: EdgeInsets.all(20),
+                    ),
+                  ),
+                ]),
+                Row(
+                  // Temperature Container -----------------------------------
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 300,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.white.withOpacity(0.5)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image(
+                              image: AssetImage('assets/images/therm.png'),
+                              height: 50,
+                              width: 50,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '$temp',
+                                  style: TextStyle(fontSize: 90),
+                                ),
+                                Icon(WeatherIcons.celsius, size: 60),
+                              ],
+                            )
+                          ],
+                        ),
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                        padding: EdgeInsets.all(26),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  // Wind Container --------------------------------------------
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.white.withOpacity(0.5)),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Icon(WeatherIcons.day_cloudy_windy),
+                              ],
+                            ),
+                            SizedBox(height: 30),
+                            Text(
+                              '$air_speed',
+                              style: TextStyle(
+                                  fontSize: 40, fontWeight: FontWeight.bold),
+                            ),
+                            Text('km/hr')
+                          ],
+                        ),
+                        margin: EdgeInsets.fromLTRB(25, 0, 10, 0),
+                        padding: EdgeInsets.all(26),
+                        height: 200,
+                      ),
+                    ),
+                    Expanded(
+                      // Humidity Container -------------------------------
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.white.withOpacity(0.5)),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Icon(WeatherIcons.humidity),
+                              ],
+                            ),
+                            SizedBox(height: 30),
+                            Text(
+                              '$hum',
+                              style: TextStyle(
+                                  fontSize: 40, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              '%',
+                              style: TextStyle(fontSize: 20),
+                            )
+                          ],
+                        ),
+                        margin: EdgeInsets.fromLTRB(0, 0, 25, 0),
+                        padding: EdgeInsets.all(26),
+                        height: 200,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  //Text ------------------------------------------------
+                  child: Column(
+                    children: [
+                      Text('Made By Haseeb Khan'),
+                      Text('Powered By openweathermap.org')
+                    ],
+                  ),
+                  padding: EdgeInsets.all(20),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+==================================================================================================
+pubspec.yaml
+
+name: mausam_app
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.4 <4.0.0'
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  http: ^0.13.0
+  flutter_spinkit: ^5.2.0
+  flutter_gradient_app_bar: ^0.3.1
+  weather_icons: ^3.0.0
+
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^3.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  assets:
+    - assets/images/
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+
+
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
+==================================================================================================
